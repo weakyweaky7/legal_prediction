@@ -1,0 +1,18 @@
+{
+    "model": "Student BERT with Knowledge Distillation",
+    "input_column": "judgement_masked",
+    "teacher_input_column": "proof_sentence_masked",
+    "note": "Teacher uses proof-related legal text during training. Student uses full judgment text for deployment. Teacher is frozen and used only for knowledge distillation.",
+    "train_sample_size": 1000,
+    "val_sample_size": 300,
+    "temperature": 4.0,
+    "alpha": 1.0,
+    "validation": {
+        "accuracy": 0.53,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "roc_auc": 0.5449395601944779,
+        "gini": 0.08987912038895574
+    }
+}

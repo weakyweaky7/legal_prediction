@@ -1,0 +1,36 @@
+{
+    "model": "Final Chunked Judgment Student BERT",
+    "model_path": "/Users/danial/Desktop/legal_prediction/models/best_student_chunked_judgment.pt",
+    "input_column": "judgement_masked",
+    "test_sample_size": null,
+    "chunk_size": 256,
+    "chunk_stride": 224,
+    "max_chunks_per_doc": 3,
+    "pooling": "max",
+    "saved_validation_threshold": 0.3699999999999999,
+    "test_metrics_at_saved_threshold": {
+        "accuracy": 0.7284533648170012,
+        "precision": 0.6756529064869419,
+        "recall": 0.8084677419354839,
+        "f1": 0.7361174850849014,
+        "roc_auc": 0.8329464458448576,
+        "gini": 0.6658928916897151
+    },
+    "test_metrics_at_threshold_0_5": {
+        "accuracy": 0.7485242030696576,
+        "precision": 0.7338422391857506,
+        "recall": 0.7268145161290323,
+        "f1": 0.7303114712585465,
+        "roc_auc": 0.8329464458448576,
+        "gini": 0.6658928916897151
+    },
+    "best_threshold_on_test_for_analysis_only": {
+        "threshold": 0.3599999999999999,
+        "accuracy": 0.7251475796930342,
+        "precision": 0.6685855263157895,
+        "recall": 0.8195564516129032,
+        "f1": 0.7364130434782609,
+        "roc_auc": 0.8329464458448576,
+        "gini": 0.6658928916897151
+    }
+}

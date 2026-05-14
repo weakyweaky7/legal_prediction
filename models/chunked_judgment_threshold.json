@@ -1,0 +1,8 @@
+{
+    "mode": "chunked_judgment",
+    "model_path": "/Users/danial/Desktop/legal_prediction/models/best_student_chunked_judgment.pt",
+    "threshold": 0.3699999999999999,
+    "aggregation": "max",
+    "f1": 0.7115384615384616,
+    "roc_auc": 0.8040947410678443
+}

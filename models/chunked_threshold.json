@@ -1,0 +1,7 @@
+{
+    "mode": "chunked_judgment",
+    "aggregation": "max",
+    "threshold": 0.86,
+    "f1": 0.7108,
+    "roc_auc": 0.7821
+}

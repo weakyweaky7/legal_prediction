@@ -1,0 +1,20 @@
+{
+    "model": "TF-IDF + Logistic Regression",
+    "input_column": "judgement_masked",
+    "validation": {
+        "accuracy": 0.7494095418044402,
+        "precision": 0.7282178217821782,
+        "recall": 0.7418053454362078,
+        "f1": 0.7349487884086935,
+        "roc_auc": 0.821883387738469,
+        "gini": 0.6437667754769381
+    },
+    "test": {
+        "accuracy": 0.7657615112160566,
+        "precision": 0.7580645161290323,
+        "recall": 0.734375,
+        "f1": 0.746031746031746,
+        "roc_auc": 0.8371409301958985,
+        "gini": 0.674281860391797
+    }
+}

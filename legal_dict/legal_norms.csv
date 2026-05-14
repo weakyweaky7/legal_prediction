@@ -1,0 +1,10 @@
+pattern_id,title,outcome_type,keywords,description
+APPEAL_ACCEPTED,Appeal accepted / allowed,Accepted,"appeal allowed; appeals allowed; allowed; appeal; appeals; accepted; allow the appeal","Used when the court accepts or allows the appeal."
+JUDGMENT_SET_ASIDE,Judgment set aside,Accepted,"set aside; aside; judgment set aside; high court set aside; judgment; indefensible; not justified","Used when a previous judgment is overturned or found legally unsustainable."
+HIGH_COURT_NOT_JUSTIFIED,High Court decision not justified,Accepted,"high court not justified; not justified; indefensible; erroneous; unsustainable","Used when the higher court finds that the lower court's decision cannot stand."
+CASE_REMANDED,Case remanded / reconsidered,Accepted,"remand; remanded; reconsideration; fresh consideration; sent back; restore","Used when the case is sent back for reconsideration or fresh decision."
+APPEAL_REJECTED,Appeal dismissed / rejected,Rejected,"appeal dismissed; dismissed; rejected; reject; dismissal; no merit; without merit","Used when the appeal or petition is rejected by the court."
+PETITION_NOT_MAINTAINABLE,Petition not maintainable,Rejected,"not maintainable; maintainability; petition not maintainable; cannot be filed; no scope; writ petition","Used when the court rejects the case because the petition is not maintainable."
+NO_INTERFERENCE,No interference with previous judgment,Rejected,"no interference; interfere; upheld; confirmed; no reason to interfere; concurrent findings","Used when the court refuses to interfere with the lower court's decision."
+COSTS_ORDER,Costs order,Neutral,"costs; no orders as to costs; with costs; without costs; cost","Used when the judgment discusses legal costs."
+PUBLIC_INTEREST_LITIGATION,Public interest litigation issue,Neutral,"public interest litigation; pil; service matters; contempt; locus standi","Used when the case discusses maintainability of public interest litigation or related procedural issues."

@@ -1,0 +1,18 @@
+{
+    "model": "Student BERT with Knowledge Distillation",
+    "input_column": "proof_sentence_masked",
+    "teacher_input_column": "proof_sentence_masked",
+    "note": "Student is the final deployed model. Teacher is used only during training.",
+    "train_sample_size": 1000,
+    "val_sample_size": 300,
+    "temperature": 4.0,
+    "alpha": 0.8,
+    "validation": {
+        "accuracy": 0.7833333333333333,
+        "precision": 0.7,
+        "recall": 0.9432624113475178,
+        "f1": 0.8036253776435045,
+        "roc_auc": 0.8724742405994916,
+        "gini": 0.7449484811989833
+    }
+}

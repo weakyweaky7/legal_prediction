@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LexAI — Legal Judgment Prediction</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ink: #0d0f14;
+  --ink2: #1e2230;
+  --mist: #f2f3f7;
+  --mist2: #e8eaf2;
+  --accent: #2a41e8;
+  --accent2: #4f63f0;
+  --gold: #c9a84c;
+  --gold-bg: #fff7e0;
+  --ok: #1a9e5c;
+  --ok-bg: #e6f7ef;
+  --err: #c0392b;
+  --err-bg: #fdecea;
+  --warn: #b7791f;
+  --warn-bg: #fff7e0;
+  --card: #ffffff;
+  --border: rgba(30,34,48,0.10);
+  --shadow: 0 8px 40px rgba(30,34,48,0.10);
+  --radius: 18px;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--mist);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(42,65,232,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, rgba(201,168,76,0.06) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--ink);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.logo-text h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.logo-text span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--ink);
+  color: #fff;
+  letter-spacing: 0.03em;
+}
+
+.pill .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+
+.metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+@media(max-width:700px) {
+  .metrics-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.metric-chip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s;
+}
+
+.metric-chip:hover {
+  transform: translateY(-2px);
+}
+
+.metric-chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 14px 14px 0 0;
+}
+
+.metric-chip:nth-child(2)::before { background: var(--ok); }
+.metric-chip:nth-child(3)::before { background: var(--gold); }
+.metric-chip:nth-child(4)::before { background: #9b59b6; }
+
+.metric-chip .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.metric-chip .value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.metric-chip .sub {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media(max-width:860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 20px 22px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.card-body {
+  padding: 16px 22px 22px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 220px;
+  border: 1.5px solid var(--mist2);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.65;
+  resize: vertical;
+  background: var(--mist);
+  color: var(--ink);
+  outline: none;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+
+textarea:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(42,65,232,0.10);
+}
+
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.setting-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  letter-spacing: 0.03em;
+}
+
+.setting-group input {
+  width: 68px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1.5px solid var(--mist2);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--mist);
+  outline: none;
+  transition: border-color .2s;
+}
+
+.setting-group input:focus {
+  border-color: var(--accent);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s, filter .15s, box-shadow .15s;
+  letter-spacing: 0.01em;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(42,65,232,0.25);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(42,65,232,0.35);
+}
+
+.btn-dark {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(13,15,20,0.18);
+}
+
+.btn-ghost {
+  background: var(--mist);
+  color: var(--ink2);
+  border: 1.5px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--mist2);
+}
+
+.btn-warning {
+  background: var(--warn-bg);
+  color: var(--warn);
+  border: 1.5px solid rgba(183,121,31,0.22);
+}
+
+.btn-warning:hover {
+  background: #ffefbf;
+}
+
+.status {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #6b7280;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--mist2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: none;
+}
+
+.spinner.active {
+  display: block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-box {
+  background: var(--err-bg);
+  color: var(--err);
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  font-size: 13px;
+  display: none;
+}
+
+#result {
+  display: grid;
+  gap: 0;
+}
+
+.result-placeholder {
+  padding: 48px 22px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.result-placeholder svg {
+  width: 40px;
+  height: 40px;
+  opacity: .3;
+  margin-bottom: 12px;
+}
+
+.verdict {
+  padding: 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--mist);
+  animation: fadeIn .4s ease;
+}
+
+.verdict.accepted {
+  background: linear-gradient(135deg, #e6f7ef 0%, #f4fff8 100%);
+}
+
+.verdict.rejected {
+  background: linear-gradient(135deg, #fdecea 0%, #fff8f7 100%);
+}
+
+.verdict.uncertain {
+  background: linear-gradient(135deg, #fff7e0 0%, #fffaf0 100%);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.verdict-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.verdict-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+.verdict-value.accepted {
+  color: var(--ok);
+}
+
+.verdict-value.rejected {
+  color: var(--err);
+}
+
+.verdict-value.uncertain {
+  color: var(--warn);
+}
+
+.confidence-ring {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.confidence-ring svg {
+  transform: rotate(-90deg);
+}
+
+.confidence-ring .ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  transform: none;
+}
+
+.result-section {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  animation: fadeIn .4s ease;
+}
+
+.result-section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mist2);
+  font-size: 14px;
+  gap: 12px;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row .rk {
+  color: #6b7280;
+}
+
+.row .rv {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  text-align: right;
+}
+
+.safety-box {
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.65;
+  border: 1px solid var(--border);
+}
+
+.safety-box.low {
+  background: var(--ok-bg);
+  color: #14532d;
+  border-color: rgba(26,158,92,0.18);
+}
+
+.safety-box.medium {
+  background: #eef1fd;
+  color: #1e3a8a;
+  border-color: rgba(42,65,232,0.16);
+}
+
+.safety-box.high {
+  background: var(--warn-bg);
+  color: #7c4a03;
+  border-color: rgba(183,121,31,0.24);
+}
+
+.safety-box strong {
+  color: inherit;
+}
+
+.word-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--mist2);
+  font-size: 13px;
+}
+
+.word-bar:last-child {
+  border-bottom: none;
+}
+
+.word-bar .wlabel {
+  width: 90px;
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.word-bar .wtrack {
+  flex: 1;
+  height: 8px;
+  background: var(--mist2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.word-bar .wfill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+}
+
+.word-bar .wscore {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #6b7280;
+  width: 52px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.pattern-card {
+  background: var(--mist);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  transition: transform .2s;
+}
+
+.pattern-card:hover {
+  transform: translateY(-1px);
+}
+
+.pattern-card:last-child {
+  margin-bottom: 0;
+}
+
+.pattern-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.outcome-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.outcome-tag.accepted {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.outcome-tag.rejected {
+  background: var(--err-bg);
+  color: var(--err);
+}
+
+.outcome-tag.uncertain,
+.outcome-tag.neutral {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.pattern-card .pmeta {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.55;
+}
+
+.pattern-card .pmeta strong {
+  color: var(--ink2);
+}
+
+.explanation {
+  background: linear-gradient(135deg, #eef1fd 0%, #f0f7ff 100%);
+  border: 1px solid rgba(42,65,232,0.15);
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink2);
+}
+
+.chunk-text {
+  background: var(--mist);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink2);
+  font-family: var(--font-mono);
+  max-height: 140px;
+  overflow: auto;
+}
+
+.kd-strip {
+  background: var(--ink);
+  color: rgba(255,255,255,0.85);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.kd-strip .kd-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.kd-strip strong {
+  color: #fff;
+}
+
+.kd-strip .kd-arrow {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+footer {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="2" width="20" height="22" rx="3" stroke="white" stroke-width="1.8"/>
+          <line x1="7" y1="8" x2="19" y2="8" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="7" y1="13" x2="19" y2="13" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="7" y1="18" x2="14" y2="18" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <h1>LexAI</h1>
+        <span>Legal Judgment Prediction</span>
+      </div>
+    </div>
+
+    <div class="header-meta">
+      <div class="pill"><span class="dot"></span>Model online</div>
+    </div>
+  </header>
+
+  <div class="metrics-bar">
+    <div class="metric-chip">
+      <div class="label">F1-Score</div>
+      <div class="value">0.736</div>
+      <div class="sub">Test set · 4,235 cases</div>
+    </div>
+
+    <div class="metric-chip">
+      <div class="label">ROC-AUC</div>
+      <div class="value">0.833</div>
+      <div class="sub">Student BERT</div>
+    </div>
+
+    <div class="metric-chip">
+      <div class="label">Gini</div>
+      <div class="value">0.666</div>
+      <div class="sub">2 × AUC − 1</div>
+    </div>
+
+    <div class="metric-chip">
+      <div class="label">Accuracy</div>
+      <div class="value">72.9%</div>
+      <div class="sub">Threshold 0.37</div>
+    </div>
+  </div>
+
+  <div class="kd-strip">
+    <div class="kd-icon">⚗️</div>
+    <div>
+      <strong>Knowledge Distillation Pipeline:</strong>
+      Teacher BERT learns from proof-related legal sentences
+      <span class="kd-arrow">→</span>
+      Student BERT fine-tuned on full judgment chunks via distillation loss
+      <span class="kd-arrow">→</span>
+      Final prediction via max pooling over chunks.
+      On inference: <strong>Student only</strong> — no data leakage.
+      Safety layer: <strong>Uncertainty Mode</strong> returns Uncertain when confidence is low.
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Input judgment text</h2>
+      </div>
+
+      <div class="card-body">
+        <textarea id="inputText">The appeal is allowed and the judgment of the high court is set aside.</textarea>
+
+        <div class="settings">
+          <div class="setting-group">
+            <span>LIME samples</span>
+            <input id="numSamples" type="number" value="300" min="100" max="2000">
+          </div>
+
+          <div class="setting-group">
+            <span>Top words</span>
+            <input id="topWords" type="number" value="12" min="3" max="30">
+          </div>
+
+          <div class="setting-group">
+            <span>Top patterns</span>
+            <input id="topPatterns" type="number" value="5" min="1" max="10">
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="btn-primary" onclick="runPredict()">⚡ Fast Prediction</button>
+          <button class="btn-dark" onclick="runExplain()">🔬 Full Explanation</button>
+          <button class="btn-ghost" onclick="loadExample('accepted')">✅ Accepted example</button>
+          <button class="btn-ghost" onclick="loadExample('rejected')">❌ Rejected example</button>
+          <button class="btn-warning" onclick="loadExample('uncertain')">⚠️ Uncertain example</button>
+        </div>
+
+        <div class="status" id="statusBar">
+          <div class="spinner" id="spinner"></div>
+          <span id="statusText"></span>
+        </div>
+
+        <div class="error-box" id="errorBox"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Result</h2>
+      </div>
+
+      <div id="result">
+        <div class="result-placeholder">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="4" width="28" height="32" rx="4" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="13" x2="28" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="20" x2="28" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="12" y1="27" x2="20" y2="27" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>Paste judgment text and run prediction</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>LexAI — local legal decision-support prototype. Not a substitute for professional legal judgment.</span>
+    <span>API docs: <a href="/docs">/docs</a> · Swagger UI available</span>
+  </footer>
+
+</div>
+
+<script>
+const EXAMPLES = {
+  accepted: "The appeal is allowed and the judgment of the high court is set aside. The respondents shall bear the costs throughout. The matter is remitted to the trial court for fresh consideration in accordance with law.",
+
+  rejected: "The appeal is dismissed as having no merit and there is no reason to interfere with the judgment of the high court. The petition is devoid of merit and is accordingly rejected. No costs.",
+
+  uncertain: "The matter contains mixed legal reasoning. The appellant raised several arguable points, but the court also noted procedural defects and incomplete evidence. Some findings may support interference with the lower court decision, while other observations suggest that the petition may not be maintainable. The final outcome depends on further judicial interpretation and review."
+};
+
+function setStatus(msg, loading=false) {
+  document.getElementById('statusText').textContent = msg || '';
+  document.getElementById('spinner').classList.toggle('active', loading);
+}
+
+function setError(msg) {
+  const el = document.getElementById('errorBox');
+  el.style.display = msg ? 'block' : 'none';
+  el.textContent = msg || '';
+}
+
+function loadExample(type) {
+  document.getElementById('inputText').value = EXAMPLES[type];
+
+  if (type === 'uncertain') {
+    setStatus('Uncertain example loaded. Note: final result still depends on model confidence.', false);
+  } else {
+    setStatus('', false);
+  }
+}
+
+function escHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function safeNumber(x, fallback=0) {
+  const n = Number(x);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function fmt4(x) {
+  return safeNumber(x).toFixed(4);
+}
+
+function fmt2(x) {
+  return safeNumber(x).toFixed(2);
+}
+
+function getPayload(data) {
+  return data.result || data;
+}
+
+function badgeClass(pred) {
+  if (pred === 'Accepted') return 'accepted';
+  if (pred === 'Rejected') return 'rejected';
+  if (pred === 'Uncertain') return 'uncertain';
+  return 'uncertain';
+}
+
+function riskClass(risk) {
+  const r = String(risk || '').toLowerCase();
+  if (r.includes('low')) return 'low';
+  if (r.includes('medium')) return 'medium';
+  if (r.includes('high')) return 'high';
+  return 'medium';
+}
+
+function confidenceRing(conf, pred='') {
+  const c = Math.max(0, Math.min(1, safeNumber(conf)));
+  const pct = Math.round(c * 100);
+  const r = 28;
+  const circ = 2 * Math.PI * r;
+  const dash = (c * circ).toFixed(1);
+
+  let color = '#c9a84c';
+  if (pred === 'Accepted') color = '#1a9e5c';
+  else if (pred === 'Rejected') color = '#c0392b';
+  else if (pred === 'Uncertain') color = '#c9a84c';
+  else color = c > 0.7 ? '#1a9e5c' : c > 0.5 ? '#c9a84c' : '#c0392b';
+
+  return `
+    <div class="confidence-ring">
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r="${r}" fill="none" stroke="#e8eaf2" stroke-width="6"/>
+        <circle cx="36" cy="36" r="${r}" fill="none" stroke="${color}" stroke-width="6"
+          stroke-dasharray="${dash} ${circ.toFixed(1)}" stroke-linecap="round"
+          style="transition:stroke-dasharray .8s cubic-bezier(.4,0,.2,1)"/>
+      </svg>
+      <div class="ring-label">
+        <strong>${pct}%</strong>
+        <span style="font-size:9px;color:#9ca3af">conf</span>
+      </div>
+    </div>`;
+}
+
+function safetyBox(r) {
+  const cls = riskClass(r.risk_level);
+  const raw = r.raw_prediction || r.raw_model_prediction || '—';
+  const isAbstained = r.is_abstained || r.prediction === 'Uncertain';
+
+  return `
+    <div class="safety-box ${cls}">
+      <div><strong>Risk level:</strong> ${escHtml(r.risk_level || 'Unknown')}</div>
+      ${isAbstained ? `<div><strong>Raw model tendency:</strong> ${escHtml(raw)}</div>` : ''}
+      <div><strong>Reason:</strong> ${escHtml(r.reason || 'No reason provided.')}</div>
+      <div><strong>Recommendation:</strong> ${escHtml(r.recommendation || 'Use as decision-support only.')}</div>
+    </div>`;
+}
+
+function detailsRows(r) {
+  const probAccepted = r.probability_accepted ?? r.prob_accepted;
+  const probRejected = r.probability_rejected ?? r.prob_rejected;
+  const margin = r.probability_margin ?? r.margin;
+
+  return `
+    <div class="row"><span class="rk">Probability Accepted</span><span class="rv">${fmt4(probAccepted)}</span></div>
+    <div class="row"><span class="rk">Probability Rejected</span><span class="rv">${fmt4(probRejected)}</span></div>
+    <div class="row"><span class="rk">Confidence</span><span class="rv">${fmt4(r.confidence)}</span></div>
+    <div class="row"><span class="rk">Probability margin</span><span class="rv">${fmt4(margin)}</span></div>
+    <div class="row"><span class="rk">Model decision threshold</span><span class="rv">${fmt4(r.decision_threshold ?? r.threshold)}</span></div>
+    <div class="row"><span class="rk">Abstain confidence threshold</span><span class="rv">${fmt4(r.abstain_confidence_threshold)}</span></div>
+    <div class="row"><span class="rk">Abstain margin threshold</span><span class="rv">${fmt4(r.abstain_margin_threshold)}</span></div>
+    <div class="row"><span class="rk">Chunks analyzed</span><span class="rv">${r.chunks_analyzed ?? '—'}</span></div>
+  `;
+}
+
+function chunksRows(probs) {
+  if (!probs || !probs.length) {
+    return '<p style="color:#9ca3af;font-size:13px">No chunk probabilities returned</p>';
+  }
+
+  return probs.map((p,i) =>
+    `<div class="row"><span class="rk">Chunk ${i}</span><span class="rv">P(Accepted) = ${fmt4(p)}</span></div>`
+  ).join('');
+}
+
+function wordBars(words, color) {
+  if (!words || !words.length) {
+    return '<p style="color:#9ca3af;font-size:13px">None found</p>';
+  }
+
+  const maxW = Math.max(...words.map(w => Math.abs(safeNumber(w.weight))));
+  const denom = maxW === 0 ? 1 : maxW;
+
+  return words.map(w => {
+    const weight = safeNumber(w.weight);
+    const pct = ((Math.abs(weight) / denom) * 100).toFixed(1);
+
+    return `<div class="word-bar">
+      <span class="wlabel">${escHtml(w.word)}</span>
+      <div class="wtrack"><div class="wfill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="wscore">${weight.toFixed(4)}</span>
+    </div>`;
+  }).join('');
+}
+
+function patternCards(patterns) {
+  if (!patterns || !patterns.length) {
+    return '<p style="color:#9ca3af;font-size:13px">No patterns matched</p>';
+  }
+
+  return patterns.map(p => {
+    const outcome = String(p.outcome_type || '');
+    let oc = 'neutral';
+
+    if (outcome.toLowerCase().includes('accept')) oc = 'accepted';
+    else if (outcome.toLowerCase().includes('reject')) oc = 'rejected';
+    else if (outcome.toLowerCase().includes('uncertain')) oc = 'uncertain';
+
+    const kw = (p.matched_keywords || []).join(', ') || '—';
+    const lw = (p.matched_lime_words || []).join(', ') || '—';
+
+    return `<div class="pattern-card">
+      <h3>
+        ${escHtml(p.title)}
+        <span class="outcome-tag ${oc}">${escHtml(p.outcome_type || 'Neutral')}</span>
+      </h3>
+      <div class="pmeta">
+        <div><strong>Score:</strong> ${fmt4(p.score)}</div>
+        <div><strong>Keywords:</strong> ${escHtml(kw)}</div>
+        <div><strong>LIME words:</strong> ${escHtml(lw)}</div>
+        <div style="margin-top:6px">${escHtml(p.description || '')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderVerdict(r) {
+  const pred = r.prediction || r.final_prediction || 'Unknown';
+  const bc = badgeClass(pred);
+
+  return `
+    <div class="verdict ${bc}">
+      <div>
+        <div class="verdict-label">Final prediction</div>
+        <div class="verdict-value ${bc}">${escHtml(pred)}</div>
+      </div>
+      ${confidenceRing(r.confidence, pred)}
+    </div>
+  `;
+}
+
+function renderPredict(data) {
+  const r = getPayload(data);
+  const chunkText = r.most_influential_chunk_text || '';
+
+  document.getElementById('result').innerHTML = `
+    ${renderVerdict(r)}
+
+    <div class="result-section">
+      <div class="section-title">Safety decision</div>
+      ${safetyBox(r)}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Details</div>
+      ${detailsRows(r)}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Chunk probabilities</div>
+      ${chunksRows(r.chunk_probabilities)}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Most influential chunk</div>
+      <div class="chunk-text">${escHtml(chunkText)}</div>
+    </div>
+  `;
+}
+
+function renderExplain(data) {
+  const d = getPayload(data);
+  const p = d.prediction_result || d;
+  const lime = d.filtered_lime || {};
+  const chunkText = p.most_influential_chunk_text || '';
+  const isUncertain = p.prediction === 'Uncertain' || p.is_abstained;
+
+  document.getElementById('result').innerHTML = `
+    ${renderVerdict(p)}
+
+    <div class="result-section">
+      <div class="section-title">Safety decision</div>
+      ${safetyBox(p)}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Details</div>
+      ${detailsRows(p)}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Chunk probabilities</div>
+      ${chunksRows(p.chunk_probabilities)}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Most influential chunk</div>
+      <div class="chunk-text">${escHtml(chunkText)}</div>
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">${isUncertain ? 'Diagnostic words for raw model tendency (LIME)' : 'Supporting words (LIME)'}</div>
+      ${wordBars(lime.supportive_words, '#1a9e5c')}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Opposing words (LIME)</div>
+      ${wordBars(lime.opposing_words, '#c0392b')}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Related legal outcome patterns</div>
+      ${isUncertain ? `
+        <div class="safety-box high" style="margin-bottom:12px">
+          Because the final prediction is Uncertain, related legal patterns are shown for reference only based on the raw model tendency.
+        </div>
+      ` : ''}
+      ${patternCards(d.related_legal_patterns)}
+    </div>
+
+    <div class="result-section">
+      <div class="section-title">Human-readable explanation</div>
+      <div class="explanation">${escHtml(d.human_readable_explanation || '')}</div>
+    </div>
+  `;
+}
+
+async function runPredict() {
+  setError('');
+
+  const text = document.getElementById('inputText').value.trim();
+
+  if (!text) {
+    setError('Please enter judgment text.');
+    return;
+  }
+
+  setStatus('Running fast prediction…', true);
+
+  try {
+    const res = await fetch('/api/predict', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ text })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || 'Prediction failed');
+    }
+
+    renderPredict(data);
+    setStatus('Prediction completed.', false);
+
+  } catch(e) {
+    setError(String(e));
+    setStatus('', false);
+  }
+}
+
+async function runExplain() {
+  setError('');
+
+  const text = document.getElementById('inputText').value.trim();
+
+  if (!text) {
+    setError('Please enter judgment text.');
+    return;
+  }
+
+  const ns = Number(document.getElementById('numSamples').value || 300);
+  const tw = Number(document.getElementById('topWords').value || 12);
+  const tp = Number(document.getElementById('topPatterns').value || 5);
+
+  setStatus('Running LIME explanation… this may take a few minutes on CPU.', true);
+
+  try {
+    const res = await fetch('/api/explain', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        text,
+        num_samples: ns,
+        top_k_words: tw,
+        top_k_patterns: tp
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.detail || 'Explanation failed');
+    }
+
+    renderExplain(data);
+    setStatus('Full explanation completed.', false);
+
+  } catch(e) {
+    setError(String(e));
+    setStatus('', false);
+  }
+}
+</script>
+
+</body>
+</html>

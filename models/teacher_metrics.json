@@ -1,0 +1,15 @@
+{
+    "model": "Teacher BERT",
+    "input_column": "proof_sentence_masked",
+    "note": "Teacher is used only during training, not during inference.",
+    "train_sample_size": 4000,
+    "val_sample_size": 1000,
+    "validation": {
+        "accuracy": 0.797,
+        "precision": 0.8177458033573142,
+        "recall": 0.7286324786324786,
+        "f1": 0.7706214689265537,
+        "roc_auc": 0.9027115063299274,
+        "gini": 0.8054230126598547
+    }
+}

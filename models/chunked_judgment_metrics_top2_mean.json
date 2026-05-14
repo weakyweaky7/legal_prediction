@@ -1,0 +1,28 @@
+{
+    "model": "Chunked judgment inference with Student BERT",
+    "base_model_path": "/Users/danial/Desktop/legal_prediction/models/best_student_proof_alpha08.pt",
+    "input_column": "judgement_masked",
+    "training_note": "The model was trained on proof_sentence_masked, then applied chunk-wise to full judgment text.",
+    "chunk_size": 256,
+    "chunk_stride": 224,
+    "max_chunks_per_doc": 4,
+    "aggregation": "top2_mean",
+    "val_sample_size": 300,
+    "threshold_0_5": {
+        "accuracy": 0.5033333333333333,
+        "precision": 0.4862068965517241,
+        "recall": 1.0,
+        "f1": 0.654292343387471,
+        "roc_auc": 0.7585084080467461,
+        "gini": 0.5170168160934923
+    },
+    "best_threshold": {
+        "threshold": 0.8199999999999996,
+        "accuracy": 0.71,
+        "precision": 0.684931506849315,
+        "recall": 0.7092198581560284,
+        "f1": 0.6968641114982579,
+        "roc_auc": 0.7585084080467461,
+        "gini": 0.5170168160934923
+    }
+}

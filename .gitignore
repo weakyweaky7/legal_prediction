@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Mac
+.DS_Store
+
+# Data / private files
+raw/
+splits/
+*.db
+legal_cases.db
+
+# ML tracking
+mlruns/
+.trash/
+
+# Large model checkpoints
+*.pt
+*.bin
+*.safetensors
+
+# Jupyter
+.ipynb_checkpoints/
